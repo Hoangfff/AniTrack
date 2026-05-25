@@ -1,0 +1,6 @@
+name: anitrack
+
+packages:
+  - apps/**
+  - features/**
+  - packages/**
