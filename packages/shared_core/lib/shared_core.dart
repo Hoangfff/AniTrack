@@ -14,3 +14,6 @@ export 'src/repositories/anikoto_repository.dart';
 export 'src/repositories/auth_repository.dart';
 export 'src/repositories/jikan_repository.dart';
 export 'src/repositories/tracking_repository.dart';
+
+export 'src/events/app_events.dart';
+export 'src/events/event_bus_service.dart';
