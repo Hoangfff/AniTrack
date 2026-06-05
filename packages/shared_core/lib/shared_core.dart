@@ -1,5 +1,5 @@
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+library shared_core;
+
+export 'src/exceptions/app_exceptions.dart';
+export 'src/network/api_client.dart';
+export 'src/network/interceptors.dart';
