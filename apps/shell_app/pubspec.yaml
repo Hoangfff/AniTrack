@@ -13,6 +13,12 @@ dependencies:
   flutter_riverpod: ^2.6.1
   shared_ui:
     path: ../../packages/shared_ui
+  discovery_mfe:
+    path: ../../features/discovery_mfe
+  player_mfe:
+    path: ../../features/player_mfe
+  shared_core:
+    path: ../../packages/shared_core
 
 dev_dependencies:
   flutter_test:

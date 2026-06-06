@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_ui/shared_ui.dart';
+import 'package:discovery_mfe/discovery_mfe.dart';
+import 'package:player_mfe/player_mfe.dart';
+import 'package:shared_core/shared_core.dart';
 
 import '../providers/navigation_provider.dart';
 import 'anitrack_sidebar.dart';
@@ -24,7 +27,7 @@ class AniTrackScaffold extends ConsumerWidget {
           Expanded(
             child: AnimatedSwitcher(
               duration: AniTrackSpacing.animNormal,
-              child: _buildContent(selectedTab),
+              child: _buildContent(selectedTab, ref),
             ),
           ),
         ],
@@ -32,13 +35,10 @@ class AniTrackScaffold extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(int selectedTab) {
+  Widget _buildContent(int selectedTab, WidgetRef ref) {
     return switch (selectedTab) {
-      0 => const _PlaceholderScreen(
-        key: ValueKey('home'),
-        title: 'Home',
-        subtitle: 'Posts, announcements, and featured content',
-        icon: Icons.home_rounded,
+      0 => const DiscoveryScreen(
+        key: ValueKey('discovery'),
       ),
       1 => const _PlaceholderScreen(
         key: ValueKey('search'),
@@ -46,11 +46,9 @@ class AniTrackScaffold extends ConsumerWidget {
         subtitle: 'Find and browse anime series',
         icon: Icons.search_rounded,
       ),
-      2 => const _PlaceholderScreen(
+      2 => AnimePlayerScreen(
         key: ValueKey('watch'),
-        title: 'Watch',
-        subtitle: 'Video player with episode selector',
-        icon: Icons.play_circle_outline_rounded,
+        malId: ref.read(activeAnimeIdProvider),
       ),
       3 => const _PlaceholderScreen(
         key: ValueKey('profile'),

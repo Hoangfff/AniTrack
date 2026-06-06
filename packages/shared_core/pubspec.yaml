@@ -12,6 +12,7 @@ dependencies:
   event_bus: ^2.0.1
   flutter:
     sdk: flutter
+  flutter_riverpod: ^2.6.1
   shared_preferences: ^2.5.5
 
 dev_dependencies:

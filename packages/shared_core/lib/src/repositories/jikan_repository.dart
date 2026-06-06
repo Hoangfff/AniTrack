@@ -25,6 +25,12 @@ class JikanRepository {
     return data.map((e) => AnimeModel.fromJson(e)).toList();
   }
 
+  Future<List<AnimeModel>> getAnimeByGenre(int genreId) async {
+    final response = await _client.get('/anime', queryParameters: {'genres': genreId});
+    final data = response.data['data'] as List<dynamic>? ?? [];
+    return data.map((e) => AnimeModel.fromJson(e)).toList();
+  }
+
   Future<AnimeModel> getAnimeDetails(int id) async {
     final response = await _client.get('/anime/$id');
     return AnimeModel.fromJson(response.data['data']);

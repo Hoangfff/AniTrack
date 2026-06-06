@@ -1,5 +1,3 @@
-/// AniTrack Shared UI — Design system, tokens, and reusable widgets.
-library shared_ui;
 
 // Theme / Design tokens
 export 'src/theme/anitrack_colors.dart';

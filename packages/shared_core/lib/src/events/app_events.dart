@@ -8,3 +8,9 @@ class VideoCompletedEvent {
 class ListUpdatedEvent {
   ListUpdatedEvent();
 }
+
+class AnimeSelectedEvent {
+  final String animeId;
+
+  AnimeSelectedEvent(this.animeId);
+}

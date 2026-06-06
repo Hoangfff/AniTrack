@@ -1,0 +1,153 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "AniTrack",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "shell_app",
+            "cwd": "apps\\shell_app",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "shell_app (profile mode)",
+            "cwd": "apps\\shell_app",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "shell_app (release mode)",
+            "cwd": "apps\\shell_app",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "discovery_mfe",
+            "cwd": "features\\discovery_mfe",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "discovery_mfe (profile mode)",
+            "cwd": "features\\discovery_mfe",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "discovery_mfe (release mode)",
+            "cwd": "features\\discovery_mfe",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "player_mfe",
+            "cwd": "features\\player_mfe",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "player_mfe (profile mode)",
+            "cwd": "features\\player_mfe",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "player_mfe (release mode)",
+            "cwd": "features\\player_mfe",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "profile_mfe",
+            "cwd": "features\\profile_mfe",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "profile_mfe (profile mode)",
+            "cwd": "features\\profile_mfe",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "profile_mfe (release mode)",
+            "cwd": "features\\profile_mfe",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "tracking_mfe",
+            "cwd": "features\\tracking_mfe",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "tracking_mfe (profile mode)",
+            "cwd": "features\\tracking_mfe",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "tracking_mfe (release mode)",
+            "cwd": "features\\tracking_mfe",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "shared_core",
+            "cwd": "packages\\shared_core",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "shared_core (profile mode)",
+            "cwd": "packages\\shared_core",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "shared_core (release mode)",
+            "cwd": "packages\\shared_core",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "shared_ui",
+            "cwd": "packages\\shared_ui",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "shared_ui (profile mode)",
+            "cwd": "packages\\shared_ui",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "shared_ui (release mode)",
+            "cwd": "packages\\shared_ui",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

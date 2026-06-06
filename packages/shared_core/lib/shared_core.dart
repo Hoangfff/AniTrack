@@ -16,3 +16,5 @@ export 'src/events/app_events.dart';
 export 'src/events/event_bus_service.dart';
 
 export 'src/utils/megaplay_helper.dart';
+
+export 'src/providers/active_anime_provider.dart';

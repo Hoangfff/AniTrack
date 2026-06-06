@@ -9,14 +9,14 @@ import 'dart:ui_web' as ui_web;
 import 'package:shared_core/shared_core.dart';
 
 class AnimePlayerScreen extends StatefulWidget {
-  final int malId;
+  final int? malId;
   final int episodeNumber;
   final String language;
 
   const AnimePlayerScreen({
     super.key,
-    required this.malId,
-    required this.episodeNumber,
+    this.malId,
+    this.episodeNumber = 1,
     this.language = 'sub',
   });
 
@@ -31,13 +31,27 @@ class _AnimePlayerScreenState extends State<AnimePlayerScreen> {
   @override
   void initState() {
     super.initState();
+
+    if(widget.malId == null) {
+      // Nếu không có MAL ID, hiển thị lỗi
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error: No anime selected. Please select an anime to watch.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 5),
+          ),
+        );
+      });
+      return;
+    }
     
     // Tạo ID độc nhất cho mỗi iframe để tránh conflict
     viewType = 'megaplay-iframe-${widget.malId}-${widget.episodeNumber}';
     
     // Sử dụng MegaPlayHelper từ shared_core để sinh link
     embedUrl = MegaPlayHelper.generateEmbedUrl(
-      malId: widget.malId,
+      malId: widget.malId ?? 0, // Fallback ID nếu null, nhưng thực tế sẽ không đến đây vì đã check ở trên
       episodeNumber: widget.episodeNumber,
       lang: widget.language,
     );
