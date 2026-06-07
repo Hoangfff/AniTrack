@@ -21,7 +21,7 @@ class AniTrackSidebar extends ConsumerWidget {
 
   static const _navItems = [
     _NavItem(icon: Icons.home_rounded, label: 'Home'),
-    _NavItem(icon: Icons.search_rounded, label: 'Search'),
+    _NavItem(icon: Icons.video_library_rounded, label: 'Library'),
     _NavItem(icon: Icons.play_circle_outline_rounded, label: 'Watch'),
     _NavItem(icon: Icons.person_outline_rounded, label: 'Profile'),
   ];

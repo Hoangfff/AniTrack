@@ -152,9 +152,15 @@ class AnimeDetailsModal extends ConsumerWidget {
                       children: [
                         // Watch Now Button Action
                         ElevatedButton.icon(
-                          onPressed: () {
+                          onPressed: () async {
+                            // Automatically add to tracking
+                            await TrackingRepository().addAnimeToList(anime, 'Watching');
+                            eventBus.fire(ListUpdatedEvent());
+
                             // 1. Close detail window
-                            Navigator.of(context).pop();
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                            }
 
                             // 2. Fire event to change tab and update active anime
                             eventBus.fire(AnimeSelectedEvent(anime.id));
@@ -183,6 +189,17 @@ class AnimeDetailsModal extends ConsumerWidget {
                             padding: AniTrackSpacing.paddingButtonLarge,
                             textStyle: AniTrackTypography.labelLarge,
                           ),
+                        ),
+                        const SizedBox(width: AniTrackSpacing.md),
+                        
+                        // Add to Tracking List Button
+                        IconButton(
+                          onPressed: () {
+                            eventBus.fire(ShowAddToListDialogEvent(anime));
+                          },
+                          icon: const Icon(Icons.bookmark_add_outlined),
+                          color: AniTrackColors.primary,
+                          tooltip: 'Thêm vào Danh sách',
                         ),
                       ],
                     ),

@@ -337,9 +337,17 @@ class _AnimePlayerScreenState extends ConsumerState<AnimePlayerScreen> {
                           final isSelected = ep.id == currentEpisode.toString();
 
                           return InkWell(
-                            onTap: () {
-                              ref.read(selectedEpisodeProvider.notifier).state =
-                                  int.parse(ep.id);
+                            onTap: () async {
+                              final selectedEp = int.parse(ep.id);
+                              ref.read(selectedEpisodeProvider.notifier).state = selectedEp;
+                              
+                              if (widget.malId != null) {
+                                await TrackingRepository().updateEpisodeProgress(
+                                  widget.malId.toString(), 
+                                  selectedEp,
+                                );
+                                eventBus.fire(ListUpdatedEvent());
+                              }
                             },
                             child: Container(
                               decoration: BoxDecoration(

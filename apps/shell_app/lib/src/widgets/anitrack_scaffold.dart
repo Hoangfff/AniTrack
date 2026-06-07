@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_ui/shared_ui.dart';
 import 'package:discovery_mfe/discovery_mfe.dart';
 import 'package:player_mfe/player_mfe.dart';
+import 'package:tracking_mfe/tracking_mfe.dart';
 import 'package:shared_core/shared_core.dart';
 
 import '../providers/navigation_provider.dart';
@@ -29,6 +30,12 @@ class _AniTrackScaffoldState extends ConsumerState<AniTrackScaffold> {
       ref.read(activeAnimeIdProvider.notifier).state = event.malId;
       ref.read(selectedTabProvider.notifier).state = 2; // Route to Watch
     });
+
+    eventBus.on<ShowAddToListDialogEvent>().listen((event) {
+      if (mounted) {
+        AddToListDialog.show(context, event.anime as AnimeModel);
+      }
+    });
   }
 
   @override
@@ -53,12 +60,7 @@ class _AniTrackScaffoldState extends ConsumerState<AniTrackScaffold> {
   Widget _buildContent(int selectedTab, WidgetRef ref) {
     return switch (selectedTab) {
       0 => const DiscoveryScreen(key: ValueKey('discovery')),
-      1 => const _PlaceholderScreen(
-        key: ValueKey('search'),
-        title: 'Search',
-        subtitle: 'Find and browse anime series',
-        icon: Icons.search_rounded,
-      ),
+      1 => const TrackingScreen(key: ValueKey('tracking')),
       2 => AnimePlayerScreen(
         key: ValueKey('watch'),
         malId: ref.read(activeAnimeIdProvider),
