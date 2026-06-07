@@ -5,11 +5,7 @@ class ErrorCard extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
 
-  const ErrorCard({
-    super.key,
-    required this.message,
-    this.onRetry,
-  });
+  const ErrorCard({super.key, required this.message, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +45,7 @@ class ErrorCard extends StatelessWidget {
                   variant: AniTrackButtonVariant.outline,
                   onPressed: onRetry,
                 ),
-              ]
+              ],
             ],
           ),
         ),

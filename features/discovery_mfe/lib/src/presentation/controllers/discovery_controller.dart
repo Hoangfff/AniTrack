@@ -20,7 +20,10 @@ final animeGenresProvider = FutureProvider<List<GenreModel>>((ref) async {
   return repo.getAnimeGenres();
 });
 
-final animeByGenreProvider = FutureProvider.family<List<AnimeModel>, int>((ref, genreId) async {
+final animeByGenreProvider = FutureProvider.family<List<AnimeModel>, int>((
+  ref,
+  genreId,
+) async {
   final repo = ref.watch(jikanRepositoryProvider);
   return repo.getAnimeByGenre(genreId);
 });

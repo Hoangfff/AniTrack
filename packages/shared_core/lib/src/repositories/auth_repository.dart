@@ -8,19 +8,19 @@ class AuthRepository {
   Future<UserModel> login(String username, String password) async {
     await Future.delayed(const Duration(seconds: 1));
     final prefs = await SharedPreferences.getInstance();
-    
+
     final user = UserModel(
       id: 'mock_user_1',
       username: username,
       avatarUrl: 'https://ui-avatars.com/api/?name=$username',
     );
-    
+
     final userJson = jsonEncode({
       'id': user.id,
       'username': user.username,
       'avatarUrl': user.avatarUrl,
     });
-    
+
     await prefs.setString(_userKey, userJson);
     return user;
   }

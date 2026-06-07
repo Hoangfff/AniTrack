@@ -12,15 +12,15 @@ class AppException implements Exception {
 
 class NetworkException extends AppException {
   NetworkException([String message = "A network error occurred."])
-      : super(message, "Network Error: ");
+    : super(message, "Network Error: ");
 }
 
 class NotFoundException extends AppException {
   NotFoundException([String message = "The requested resource was not found."])
-      : super(message, "Not Found Error: ");
+    : super(message, "Not Found Error: ");
 }
 
 class ServerException extends AppException {
   ServerException([String message = "An internal server error occurred."])
-      : super(message, "Server Error: ");
+    : super(message, "Server Error: ");
 }

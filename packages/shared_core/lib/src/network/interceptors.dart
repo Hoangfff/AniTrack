@@ -14,7 +14,9 @@ class AppInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
-      print('RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
+      print(
+        'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}',
+      );
     }
     super.onResponse(response, handler);
   }
@@ -22,7 +24,9 @@ class AppInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (kDebugMode) {
-      print('ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
+      print(
+        'ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}',
+      );
     }
 
     switch (err.response?.statusCode) {
@@ -31,7 +35,7 @@ class AppInterceptor extends Interceptor {
       case 500:
         throw ServerException();
       default:
-        if (err.type == DioExceptionType.connectionTimeout || 
+        if (err.type == DioExceptionType.connectionTimeout ||
             err.type == DioExceptionType.receiveTimeout) {
           throw NetworkException('Connection timed out');
         }

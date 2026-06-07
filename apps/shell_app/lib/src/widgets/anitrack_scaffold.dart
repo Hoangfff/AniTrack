@@ -13,11 +13,26 @@ import 'anitrack_sidebar.dart';
 /// The content area switches based on the selected tab from
 /// [selectedTabProvider]. Currently shows placeholder screens;
 /// real MFE screens will replace them later.
-class AniTrackScaffold extends ConsumerWidget {
+class AniTrackScaffold extends ConsumerStatefulWidget {
   const AniTrackScaffold({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AniTrackScaffold> createState() => _AniTrackScaffoldState();
+}
+
+class _AniTrackScaffoldState extends ConsumerState<AniTrackScaffold> {
+  @override
+  void initState() {
+    super.initState();
+    // Listen for AnimeSelectedEvent to switch to Watch tab automatically
+    eventBus.on<AnimeSelectedEvent>().listen((event) {
+      ref.read(activeAnimeIdProvider.notifier).state = event.malId;
+      ref.read(selectedTabProvider.notifier).state = 2; // Route to Watch
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final selectedTab = ref.watch(selectedTabProvider);
 
     return Scaffold(
@@ -37,9 +52,7 @@ class AniTrackScaffold extends ConsumerWidget {
 
   Widget _buildContent(int selectedTab, WidgetRef ref) {
     return switch (selectedTab) {
-      0 => const DiscoveryScreen(
-        key: ValueKey('discovery'),
-      ),
+      0 => const DiscoveryScreen(key: ValueKey('discovery')),
       1 => const _PlaceholderScreen(
         key: ValueKey('search'),
         title: 'Search',

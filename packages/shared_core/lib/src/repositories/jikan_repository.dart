@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
-import '../network/api_client.dart';
-import '../models/anime_model.dart';
-import '../models/genre_model.dart';
+import 'package:shared_core/shared_core.dart';
 
 class JikanRepository {
   final Dio _client = ApiClient().jikanClient;
@@ -20,13 +18,19 @@ class JikanRepository {
   }
 
   Future<List<AnimeModel>> searchAnime(String keyword) async {
-    final response = await _client.get('/anime', queryParameters: {'q': keyword, 'sfw': true});
+    final response = await _client.get(
+      '/anime',
+      queryParameters: {'q': keyword, 'sfw': true},
+    );
     final data = response.data['data'] as List<dynamic>? ?? [];
     return data.map((e) => AnimeModel.fromJson(e)).toList();
   }
 
   Future<List<AnimeModel>> getAnimeByGenre(int genreId) async {
-    final response = await _client.get('/anime', queryParameters: {'genres': genreId});
+    final response = await _client.get(
+      '/anime',
+      queryParameters: {'genres': genreId},
+    );
     final data = response.data['data'] as List<dynamic>? ?? [];
     return data.map((e) => AnimeModel.fromJson(e)).toList();
   }
@@ -34,6 +38,12 @@ class JikanRepository {
   Future<AnimeModel> getAnimeDetails(int id) async {
     final response = await _client.get('/anime/$id');
     return AnimeModel.fromJson(response.data['data']);
+  }
+
+  Future<List<JikanEpisodeModel>> getEpisodesList(String animeId) async {
+    final response = await _client.get('/anime/$animeId/episodes');
+    final data = response.data['data'] as List<dynamic>? ?? [];
+    return data.map((e) => JikanEpisodeModel.fromJson(e)).toList();
   }
 
   Future<List<GenreModel>> getAnimeGenres() async {

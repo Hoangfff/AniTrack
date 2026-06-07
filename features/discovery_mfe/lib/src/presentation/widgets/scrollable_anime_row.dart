@@ -123,7 +123,7 @@ class _ScrollableAnimeRowState extends State<ScrollableAnimeRow> {
               separatorBuilder: (context, index) =>
                   const SizedBox(width: AniTrackSpacing.md),
               itemBuilder: (context, index) {
-                return  SizedBox(
+                return SizedBox(
                   width: _itemWidth,
                   child: InkWell(
                     onTap: () {

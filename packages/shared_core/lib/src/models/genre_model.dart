@@ -5,9 +5,6 @@ class GenreModel {
   GenreModel({required this.id, required this.name});
 
   factory GenreModel.fromJson(Map<String, dynamic> json) {
-    return GenreModel(
-      id: json['mal_id'] ?? 0,
-      name: json['name'] ?? '',
-    );
+    return GenreModel(id: json['mal_id'] ?? 0, name: json['name'] ?? '');
   }
 }

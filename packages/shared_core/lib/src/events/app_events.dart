@@ -10,7 +10,6 @@ class ListUpdatedEvent {
 }
 
 class AnimeSelectedEvent {
-  final String animeId;
-
-  AnimeSelectedEvent(this.animeId);
+  final int malId;
+  AnimeSelectedEvent(this.malId);
 }

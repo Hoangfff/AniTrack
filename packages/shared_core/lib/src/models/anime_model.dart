@@ -30,7 +30,8 @@ class AnimeModel {
       score: (json['score'] ?? 0.0).toDouble(),
       status: json['status'] ?? '',
       episodes: json['episodes'] ?? 0,
-      genres: (json['genres'] as List<dynamic>?)
+      genres:
+          (json['genres'] as List<dynamic>?)
               ?.map((e) => GenreModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],

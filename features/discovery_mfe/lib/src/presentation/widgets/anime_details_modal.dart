@@ -3,17 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_core/shared_core.dart';
 import 'package:shared_ui/shared_ui.dart';
 
-// Assuming selectedTabProvider is imported from its path or shared package
-// Modify import path to fit your absolute project structure for global providers
-import 'package:shell_app/src/providers/navigation_provider.dart';
-
 class AnimeDetailsModal extends ConsumerWidget {
   final AnimeModel anime;
 
-  const AnimeDetailsModal({
-    super.key,
-    required this.anime,
-  });
+  const AnimeDetailsModal({super.key, required this.anime});
 
   /// Helper helper static method to easily present the screen cleanly as a dialog
   static void show(BuildContext context, AnimeModel anime) {
@@ -54,7 +47,8 @@ class AnimeDetailsModal extends ConsumerWidget {
                       anime.imageUrl,
                       fit: BoxFit.cover,
                       alignment: Alignment.topCenter,
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                      errorBuilder: (context, error, stackTrace) =>
+                          const SizedBox.shrink(),
                     )
                   : const SizedBox.shrink(),
             ),
@@ -82,7 +76,12 @@ class AnimeDetailsModal extends ConsumerWidget {
           // LAYER 3: Main Left-Hand Metadata Content Layout
           Positioned.fill(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(AniTrackSpacing.xs, AniTrackSpacing.xxxxl, AniTrackSpacing.xxxxl, AniTrackSpacing.xxxxl),
+              padding: const EdgeInsets.fromLTRB(
+                AniTrackSpacing.xs,
+                AniTrackSpacing.xxxxl,
+                AniTrackSpacing.xxxxl,
+                AniTrackSpacing.xxxxl,
+              ),
               child: FractionallySizedBox(
                 widthFactor: 0.48,
                 child: Column(
@@ -156,9 +155,9 @@ class AnimeDetailsModal extends ConsumerWidget {
                           onPressed: () {
                             // 1. Close detail window
                             Navigator.of(context).pop();
-                            // 2. Switch tab selection index state to index 2 ("Watch" tab)
-                            ref.read(activeAnimeIdProvider.notifier).state = anime.id;
-                            ref.read(selectedTabProvider.notifier).state = 2;
+
+                            // 2. Fire event to change tab and update active anime
+                            eventBus.fire(AnimeSelectedEvent(anime.id));
                           },
                           icon: const Icon(Icons.play_arrow_rounded, size: 24),
                           label: const Text('Watch Now'),
@@ -178,7 +177,9 @@ class AnimeDetailsModal extends ConsumerWidget {
                           label: const Text('Close'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AniTrackColors.onSurface,
-                            side: const BorderSide(color: AniTrackColors.border),
+                            side: const BorderSide(
+                              color: AniTrackColors.border,
+                            ),
                             padding: AniTrackSpacing.paddingButtonLarge,
                             textStyle: AniTrackTypography.labelLarge,
                           ),

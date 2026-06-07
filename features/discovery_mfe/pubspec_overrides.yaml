@@ -1,6 +1,10 @@
-# melos_managed_dependency_overrides: shared_core,shared_ui
+# melos_managed_dependency_overrides: shared_core,shared_ui,player_mfe,shell_app
 dependency_overrides:
+  player_mfe:
+    path: ..\\player_mfe
   shared_core:
     path: ..\\..\\packages\\shared_core
   shared_ui:
     path: ..\\..\\packages\\shared_ui
+  shell_app:
+    path: ..\\..\\apps\\shell_app

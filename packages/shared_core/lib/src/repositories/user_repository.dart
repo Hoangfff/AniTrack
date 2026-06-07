@@ -8,7 +8,7 @@ class UserRepository {
     return "John Doe";
   }
 
-  Future<String>getCurrentAnime() async {
+  Future<String> getCurrentAnime() async {
     // Simulate fetching the currently selected anime from local storage
     await Future.delayed(Duration(milliseconds: 500));
     return selectedAnimeKey;

@@ -27,13 +27,16 @@ class AnimeCard extends StatelessWidget {
                 errorBuilder: (context, error, stackTrace) => Container(
                   color: AniTrackColors.surfaceVariant,
                   child: const Center(
-                    child: Icon(Icons.broken_image, color: AniTrackColors.textMuted),
+                    child: Icon(
+                      Icons.broken_image,
+                      color: AniTrackColors.textMuted,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-          
+
           // Gradient Overlay
           Positioned.fill(
             child: Container(
