@@ -4,6 +4,7 @@ import 'package:shared_ui/shared_ui.dart';
 import 'package:discovery_mfe/discovery_mfe.dart';
 import 'package:player_mfe/player_mfe.dart';
 import 'package:tracking_mfe/tracking_mfe.dart';
+import 'package:profile_mfe/profile_mfe.dart';
 import 'package:shared_core/shared_core.dart';
 
 import '../providers/navigation_provider.dart';
@@ -65,12 +66,7 @@ class _AniTrackScaffoldState extends ConsumerState<AniTrackScaffold> {
         key: ValueKey('watch'),
         malId: ref.read(activeAnimeIdProvider),
       ),
-      3 => const _PlaceholderScreen(
-        key: ValueKey('profile'),
-        title: 'Profile',
-        subtitle: 'Your info, playlists, and settings',
-        icon: Icons.person_outline_rounded,
-      ),
+      3 => const ProfileScreen(key: ValueKey('profile')),
       _ => const _PlaceholderScreen(
         key: ValueKey('home'),
         title: 'Home',
