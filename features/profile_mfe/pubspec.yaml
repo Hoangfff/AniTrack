@@ -10,6 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_riverpod: ^2.6.1
+  shared_ui:
+    path: ../../packages/shared_ui
+  shared_core:
+    path: ../../packages/shared_core
 
 dev_dependencies:
   flutter_test:
