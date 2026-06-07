@@ -13,3 +13,8 @@ class AnimeSelectedEvent {
   final int malId;
   AnimeSelectedEvent(this.malId);
 }
+
+class ShowAddToListDialogEvent {
+  final dynamic anime; // dynamic to avoid cyclical dependency, or import AnimeModel
+  ShowAddToListDialogEvent(this.anime);
+}

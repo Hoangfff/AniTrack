@@ -17,6 +17,8 @@ dependencies:
     path: ../../features/discovery_mfe
   player_mfe:
     path: ../../features/player_mfe
+  tracking_mfe:
+    path: ../../features/tracking_mfe
   shared_core:
     path: ../../packages/shared_core
 

@@ -7,11 +7,19 @@ import '../controllers/discovery_controller.dart';
 import '../widgets/scrollable_anime_row.dart';
 import '../widgets/error_card.dart';
 
-class DiscoveryScreen extends ConsumerWidget {
+class DiscoveryScreen extends ConsumerStatefulWidget {
   const DiscoveryScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DiscoveryScreen> createState() => _DiscoveryScreenState();
+}
+
+class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
+  String _searchQuery = '';
+  final JikanRepository _jikanRepo = JikanRepository();
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AniTrackColors.background,
       body: CustomScrollView(
@@ -32,18 +40,45 @@ class DiscoveryScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionHeader('Current Season'),
-                  _buildSeasonalAnime(ref),
+                  // Search Bar
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AniTrackSpacing.lg),
+                    child: TextField(
+                      onChanged: (val) {
+                        setState(() {
+                          _searchQuery = val;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Tìm kiếm Anime...',
+                        prefixIcon: const Icon(Icons.search),
+                        filled: true,
+                        fillColor: AniTrackColors.surfaceVariant,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AniTrackSpacing.lg),
 
-                  const SizedBox(height: AniTrackSpacing.xl),
+                  if (_searchQuery.isNotEmpty)
+                    _buildSearchResults()
+                  else ...[
+                    _buildSectionHeader('Current Season'),
+                    _buildSeasonalAnime(ref),
 
-                  _buildSectionHeader('Top Anime'),
-                  _buildTopAnime(ref),
+                    const SizedBox(height: AniTrackSpacing.xl),
 
-                  const SizedBox(height: AniTrackSpacing.xl),
+                    _buildSectionHeader('Top Anime'),
+                    _buildTopAnime(ref),
 
-                  _buildSectionHeader('Anime By Genre'),
-                  _buildAnimeByGenre(ref),
+                    const SizedBox(height: AniTrackSpacing.xl),
+
+                    _buildSectionHeader('Anime By Genre'),
+                    _buildAnimeByGenre(ref),
+                  ],
                 ],
               ),
             ),
@@ -182,6 +217,32 @@ class DiscoveryScreen extends ConsumerWidget {
       ),
       error: (err, stack) =>
           ErrorCard(message: err.toString(), onRetry: onRetry),
+    );
+  }
+
+  Widget _buildSearchResults() {
+    return FutureBuilder<List<AnimeModel>>(
+      future: _jikanRepo.searchAnime(_searchQuery),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 280,
+            child: Center(child: CircularProgressIndicator(color: AniTrackColors.primary)),
+          );
+        }
+        if (snapshot.hasError) {
+          return const ErrorCard(message: 'Lỗi tìm kiếm');
+        }
+        final list = snapshot.data ?? [];
+        if (list.isEmpty) {
+          return const SizedBox(
+            height: 280,
+            child: Center(child: Text('Không tìm thấy anime.')),
+          );
+        }
+        // Hiển thị dạng cuộn ngang giống ScrollableAnimeRow
+        return ScrollableAnimeRow(animeList: list);
+      },
     );
   }
 }
