@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_ui/shared_ui.dart';
@@ -6,14 +7,14 @@ import '../widgets/tracking_anime_card.dart';
 import '../widgets/add_to_list_dialog.dart';
 import 'package:shared_core/shared_core.dart';
 
-class TrackingScreen extends StatefulWidget {
+class TrackingScreen extends ConsumerStatefulWidget {
   const TrackingScreen({super.key});
 
   @override
-  State<TrackingScreen> createState() => _TrackingScreenState();
+  ConsumerState<TrackingScreen> createState() => _TrackingScreenState();
 }
 
-class _TrackingScreenState extends State<TrackingScreen> with SingleTickerProviderStateMixin {
+class _TrackingScreenState extends ConsumerState<TrackingScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -30,10 +31,13 @@ class _TrackingScreenState extends State<TrackingScreen> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final isLoggedIn = authState.value != null;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thư viện của tôi'),
-        bottom: TabBar(
+        bottom: isLoggedIn ? TabBar(
           controller: _tabController,
           indicatorColor: AniTrackColors.primary,
           labelColor: AniTrackColors.primary,
@@ -43,16 +47,52 @@ class _TrackingScreenState extends State<TrackingScreen> with SingleTickerProvid
             Tab(text: 'Đã hoàn thành'),
             Tab(text: 'Danh sách của tôi'),
           ],
-        ),
+        ) : null,
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          _TrackingGrid(providerType: 'Watching'),
-          _TrackingGrid(providerType: 'Completed'),
-          _MyListsTab(),
-        ],
-      ),
+      body: isLoggedIn 
+        ? TabBarView(
+            controller: _tabController,
+            children: const [
+              _TrackingGrid(providerType: 'Watching'),
+              _TrackingGrid(providerType: 'Completed'),
+              _MyListsTab(),
+            ],
+          )
+        : Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.lock_outline, size: 80, color: AniTrackColors.textMuted),
+                const SizedBox(height: 24),
+                Text(
+                  'Vui lòng đăng nhập\nđể xem danh sách của bạn',
+                  textAlign: TextAlign.center,
+                  style: AniTrackTypography.headlineMedium.copyWith(color: AniTrackColors.onBackground),
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        eventBus.fire(NavigateToProfileEvent());
+                      },
+                      style: ElevatedButton.styleFrom(backgroundColor: AniTrackColors.primary, foregroundColor: AniTrackColors.onPrimary),
+                      child: const Text('Đăng nhập'),
+                    ),
+                    const SizedBox(width: 16),
+                    OutlinedButton(
+                      onPressed: () {
+                        eventBus.fire(NavigateToProfileEvent());
+                      },
+                      style: OutlinedButton.styleFrom(foregroundColor: AniTrackColors.primary, side: const BorderSide(color: AniTrackColors.primary)),
+                      child: const Text('Đăng ký'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
     );
   }
 }
@@ -112,6 +152,14 @@ class _MyListsTabState extends ConsumerState<_MyListsTab> {
   String _searchQuery = '';
   String? _selectedList;
   final JikanRepository _jikanRepo = JikanRepository();
+  Timer? _debounce;
+  Future<List<AnimeModel>>? _searchFuture;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,8 +195,16 @@ class _MyListsTabState extends ConsumerState<_MyListsTab> {
           padding: const EdgeInsets.all(16),
           child: TextField(
             onChanged: (val) {
-              setState(() {
-                _searchQuery = val;
+              if (_debounce?.isActive ?? false) _debounce!.cancel();
+              _debounce = Timer(const Duration(milliseconds: 500), () {
+                setState(() {
+                  _searchQuery = val;
+                  if (val.isNotEmpty) {
+                    _searchFuture = _jikanRepo.searchAnime(val);
+                  } else {
+                    _searchFuture = null;
+                  }
+                });
               });
             },
             decoration: InputDecoration(
@@ -174,7 +230,7 @@ class _MyListsTabState extends ConsumerState<_MyListsTab> {
 
   Widget _buildSearchResults() {
     return FutureBuilder<List<AnimeModel>>(
-      future: _jikanRepo.searchAnime(_searchQuery),
+      future: _searchFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -288,7 +344,16 @@ class _MyListsTabState extends ConsumerState<_MyListsTab> {
                     child: ListTile(
                       leading: const Icon(Icons.folder, color: AniTrackColors.secondary),
                       title: Text(listName, style: AniTrackTypography.titleMedium),
-                      trailing: const Icon(Icons.chevron_right),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.redAccent),
+                            onPressed: () => _showDeleteListConfirmDialog(context, listName),
+                          ),
+                          const Icon(Icons.chevron_right),
+                        ],
+                      ),
                       onTap: () {
                         setState(() {
                           _selectedList = listName;
@@ -304,6 +369,32 @@ class _MyListsTabState extends ConsumerState<_MyListsTab> {
           ),
         ),
       ],
+    );
+  }
+
+  void _showDeleteListConfirmDialog(BuildContext context, String listName) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AniTrackColors.surface,
+        title: Text('Xóa danh sách', style: AniTrackTypography.headlineMedium),
+        content: Text('Bạn có chắc muốn xóa danh sách "$listName" và toàn bộ phim trong đó không?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Hủy', style: TextStyle(color: AniTrackColors.textMuted)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await TrackingRepository().deleteCustomList(listName);
+              ref.invalidate(customListsProvider);
+              if (context.mounted) Navigator.of(context).pop();
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            child: const Text('Xóa', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 

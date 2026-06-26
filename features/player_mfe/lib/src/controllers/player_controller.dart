@@ -14,6 +14,11 @@ final animeEpisodesProvider =
       return repo.getEpisodesList(animeId);
     });
 
+final animeDetailsProvider = FutureProvider.family<AnimeModel, String>((ref, animeId) async {
+  final repo = ref.watch(jikanRepositoryProvider);
+  return repo.getAnimeDetails(int.parse(animeId));
+});
+
 // Provides the currently selected episode number
 final selectedEpisodeProvider = StateProvider<int>((ref) => 1);
 

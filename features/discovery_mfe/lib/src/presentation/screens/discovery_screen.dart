@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_core/shared_core.dart';
@@ -16,10 +17,21 @@ class DiscoveryScreen extends ConsumerStatefulWidget {
 
 class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
   String _searchQuery = '';
+  Timer? _debounce;
   final JikanRepository _jikanRepo = JikanRepository();
+  Future<List<AnimeModel>>? _searchFuture;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final isLoggedIn = authState.value != null;
+
     return Scaffold(
       backgroundColor: AniTrackColors.background,
       body: CustomScrollView(
@@ -45,8 +57,16 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: AniTrackSpacing.lg),
                     child: TextField(
                       onChanged: (val) {
-                        setState(() {
-                          _searchQuery = val;
+                        if (_debounce?.isActive ?? false) _debounce!.cancel();
+                        _debounce = Timer(const Duration(milliseconds: 500), () {
+                          setState(() {
+                            _searchQuery = val;
+                            if (val.isNotEmpty) {
+                              _searchFuture = _jikanRepo.searchAnime(val);
+                            } else {
+                              _searchFuture = null;
+                            }
+                          });
                         });
                       },
                       decoration: InputDecoration(
@@ -62,6 +82,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                     ),
                   ),
                   const SizedBox(height: AniTrackSpacing.lg),
+
+                  if (!isLoggedIn) _buildGuestBanner(ref),
 
                   if (_searchQuery.isNotEmpty)
                     _buildSearchResults()
@@ -222,7 +244,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
 
   Widget _buildSearchResults() {
     return FutureBuilder<List<AnimeModel>>(
-      future: _jikanRepo.searchAnime(_searchQuery),
+      future: _searchFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const SizedBox(
@@ -243,6 +265,55 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
         // Hiển thị dạng cuộn ngang giống ScrollableAnimeRow
         return ScrollableAnimeRow(animeList: list);
       },
+    );
+  }
+
+  Widget _buildGuestBanner(WidgetRef ref) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: AniTrackSpacing.lg, vertical: AniTrackSpacing.sm),
+      padding: const EdgeInsets.all(AniTrackSpacing.md),
+      decoration: BoxDecoration(
+        color: AniTrackColors.primaryContainer,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Đăng nhập để lưu lại các bộ phim yêu thích của bạn!',
+            style: AniTrackTypography.titleMedium.copyWith(
+              color: AniTrackColors.primaryLight,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: AniTrackSpacing.md),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  eventBus.fire(NavigateToProfileEvent());
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AniTrackColors.primary,
+                  foregroundColor: AniTrackColors.onPrimary,
+                ),
+                child: const Text('Đăng nhập'),
+              ),
+              const SizedBox(width: AniTrackSpacing.sm),
+              OutlinedButton(
+                onPressed: () {
+                  eventBus.fire(NavigateToProfileEvent());
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AniTrackColors.primary,
+                  side: const BorderSide(color: AniTrackColors.primary),
+                ),
+                child: const Text('Đăng ký'),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

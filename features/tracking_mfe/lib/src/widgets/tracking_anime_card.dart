@@ -23,53 +23,77 @@ class TrackingAnimeCard extends StatelessWidget {
           }
         },
         borderRadius: BorderRadius.circular(12),
-        child: Container(
-          decoration: BoxDecoration(
-            color: AniTrackColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: const [
-              BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              child: imageUrl.isNotEmpty
-                  ? Image.network(imageUrl, fit: BoxFit.cover, width: double.infinity)
-                  : Container(color: Colors.grey),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: AniTrackColors.surface,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                      child: imageUrl.isNotEmpty
+                          ? Image.network(imageUrl, fit: BoxFit.cover, width: double.infinity)
+                          : Container(color: Colors.grey),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: AniTrackTypography.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Tiến độ: $progress / ${totalEpisodes > 0 ? totalEpisodes : '?'}',
+                          style: AniTrackTypography.bodySmall.copyWith(color: AniTrackColors.primary),
+                        ),
+                        const SizedBox(height: 4),
+                        LinearProgressIndicator(
+                          value: totalEpisodes > 0 ? (progress / totalEpisodes) : 0.0,
+                          backgroundColor: Colors.grey[800],
+                          color: AniTrackColors.primary,
+                          minHeight: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: AniTrackTypography.bodyMedium.copyWith(fontWeight: FontWeight.bold),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+            if (data['status'] != null && data['animeId'] != null)
+              Positioned(
+                top: 4,
+                right: 4,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.black54,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.close, size: 16, color: Colors.white),
+                    constraints: const BoxConstraints(),
+                    padding: const EdgeInsets.all(4),
+                    onPressed: () async {
+                      await TrackingRepository().removeAnimeFromList(data['status'], data['animeId']);
+                      eventBus.fire(ListUpdatedEvent());
+                    },
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Tiến độ: $progress / ${totalEpisodes > 0 ? totalEpisodes : '?'}',
-                  style: AniTrackTypography.bodySmall.copyWith(color: AniTrackColors.primary),
-                ),
-                const SizedBox(height: 4),
-                LinearProgressIndicator(
-                  value: totalEpisodes > 0 ? (progress / totalEpisodes) : 0.0,
-                  backgroundColor: Colors.grey[800],
-                  color: AniTrackColors.primary,
-                  minHeight: 4,
-                ),
-              ],
-            ),
-          ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );

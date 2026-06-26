@@ -1,4 +1,4 @@
-# Miscellaneous
+﻿# Miscellaneous
 *.class
 *.log
 *.pyc
@@ -32,5 +32,9 @@ migrate_working_dir/
 
 # Local documents
 /document/
-/instruction md/
+/local document/
 .github/
+
+# Ignore node_modules
+node_modules/
+**/node_modules/

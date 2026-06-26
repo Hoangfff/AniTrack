@@ -87,6 +87,9 @@ class _AnimePlayerScreenState extends ConsumerState<AnimePlayerScreen> {
     final episodesAsync = ref.watch(
       animeEpisodesProvider(widget.malId.toString()),
     );
+    final animeDetailsAsync = ref.watch(
+      animeDetailsProvider(widget.malId.toString()),
+    );
     final currentEpisode = ref.watch(selectedEpisodeProvider);
     final currentLanguage = ref.watch(playerLanguageProvider);
 
@@ -147,6 +150,7 @@ class _AnimePlayerScreenState extends ConsumerState<AnimePlayerScreen> {
 
                           final currentEp = episodes.firstWhere(
                             (ep) => ep.id == currentEpisode.toString(),
+                            orElse: () => episodes.first,
                           );
 
                           return Column(
@@ -342,9 +346,13 @@ class _AnimePlayerScreenState extends ConsumerState<AnimePlayerScreen> {
                               ref.read(selectedEpisodeProvider.notifier).state = selectedEp;
                               
                               if (widget.malId != null) {
+                                final anime = animeDetailsAsync.value;
                                 await TrackingRepository().updateEpisodeProgress(
                                   widget.malId.toString(), 
                                   selectedEp,
+                                  title: anime?.title,
+                                  imageUrl: anime?.imageUrl,
+                                  totalEpisodes: anime?.episodes,
                                 );
                                 eventBus.fire(ListUpdatedEvent());
                               }
