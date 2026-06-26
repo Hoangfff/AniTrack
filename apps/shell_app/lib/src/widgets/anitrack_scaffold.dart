@@ -28,6 +28,11 @@ class _AniTrackScaffoldState extends ConsumerState<AniTrackScaffold> {
     super.initState();
     // Listen for AnimeSelectedEvent to switch to Watch tab automatically
     eventBus.on<AnimeSelectedEvent>().listen((event) {
+      if (ref.read(activeAnimeIdProvider) != event.malId) {
+        // Reset episode to 1 when switching anime
+        // Note: In a real app we might want to fetch saved progress first
+        ref.read(selectedEpisodeProvider.notifier).state = 1;
+      }
       ref.read(activeAnimeIdProvider.notifier).state = event.malId;
       ref.read(selectedTabProvider.notifier).state = 2; // Route to Watch
     });
@@ -36,6 +41,10 @@ class _AniTrackScaffoldState extends ConsumerState<AniTrackScaffold> {
       if (mounted) {
         AddToListDialog.show(context, event.anime as AnimeModel);
       }
+    });
+
+    eventBus.on<NavigateToProfileEvent>().listen((_) {
+      ref.read(selectedTabProvider.notifier).state = 3; // Route to Profile
     });
   }
 

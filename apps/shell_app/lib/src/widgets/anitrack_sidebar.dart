@@ -70,8 +70,6 @@ class AniTrackSidebar extends ConsumerWidget {
           ),
 
           // ── Bottom section ──
-          const Divider(),
-          _buildThemeToggle(isExpanded),
           const SizedBox(height: AniTrackSpacing.sm),
         ],
       ),
