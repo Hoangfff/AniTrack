@@ -18,3 +18,5 @@ class ShowAddToListDialogEvent {
   final dynamic anime; // dynamic to avoid cyclical dependency, or import AnimeModel
   ShowAddToListDialogEvent(this.anime);
 }
+
+class NavigateToProfileEvent {}
