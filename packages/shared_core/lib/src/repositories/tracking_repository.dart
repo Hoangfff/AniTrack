@@ -1,73 +1,111 @@
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/anime_model.dart';
+import '../network/api_client.dart';
 
 class TrackingRepository {
-  static const String _listKey = 'mock_tracking_list';
-  static const String _customListsKey = 'mock_custom_lists';
-
   Future<List<String>> getCustomLists() async {
     final prefs = await SharedPreferences.getInstance();
-    final lists = prefs.getStringList(_customListsKey);
-    return lists ?? [];
+    final userId = prefs.getInt('userId');
+    if (userId == null) return [];
+
+    try {
+      final response = await ApiClient().localClient.get('/lists/$userId');
+      final data = response.data as List;
+      return data.map((e) => e['list_name'].toString()).toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   Future<void> createCustomList(String name) async {
     final prefs = await SharedPreferences.getInstance();
-    final lists = prefs.getStringList(_customListsKey) ?? [];
-    if (!lists.contains(name)) {
-      lists.add(name);
-      await prefs.setStringList(_customListsKey, lists);
+    final userId = prefs.getInt('userId');
+    if (userId == null) return;
+
+    try {
+      await ApiClient().localClient.post('/lists/$userId/create', data: {
+        'list_name': name,
+      });
+    } catch (e) {
+      // Ignore
     }
   }
 
   Future<void> addAnimeToList(AnimeModel anime, String status) async {
     final prefs = await SharedPreferences.getInstance();
-    final listString = prefs.getString(_listKey);
-    Map<String, dynamic> trackingList = listString != null
-        ? jsonDecode(listString)
-        : {};
+    final userId = prefs.getInt('userId');
+    if (userId == null) return;
 
-    trackingList[anime.id.toString()] = {
-      'animeId': anime.id,
-      'title': anime.title,
-      'status': status,
-      'progress': 0,
-      'totalEpisodes': anime.episodes,
-      'imageUrl': anime.imageUrl,
-    };
-
-    await prefs.setString(_listKey, jsonEncode(trackingList));
+    try {
+      await ApiClient().localClient.post('/tracking/progress', data: {
+        'userId': userId,
+        'animeId': anime.id,
+        'currentEpisode': 0,
+        'totalEpisodes': anime.episodes ?? 0,
+        'status': status,
+        'title': anime.title,
+        'imageUrl': anime.imageUrl,
+      });
+    } catch (e) {
+      // Ignore
+    }
   }
 
-  Future<void> updateEpisodeProgress(String animeId, int watchedEps) async {
+  Future<void> updateEpisodeProgress(String animeId, int watchedEps, {String? title, String? imageUrl, int? totalEpisodes}) async {
     final prefs = await SharedPreferences.getInstance();
-    final listString = prefs.getString(_listKey);
-    if (listString == null) return;
+    final userId = prefs.getInt('userId');
+    if (userId == null) return;
 
-    Map<String, dynamic> trackingList = jsonDecode(listString);
-    if (trackingList.containsKey(animeId)) {
-      trackingList[animeId]['progress'] = watchedEps;
-      
-      // Auto move to 'Completed' if finished
-      final totalEps = trackingList[animeId]['totalEpisodes'];
-      if (totalEps != null && totalEps > 0 && watchedEps >= totalEps) {
-        trackingList[animeId]['status'] = 'Completed';
-      }
-      
-      await prefs.setString(_listKey, jsonEncode(trackingList));
+    try {
+      await ApiClient().localClient.post('/tracking/progress', data: {
+        'userId': userId,
+        'animeId': int.parse(animeId),
+        'currentEpisode': watchedEps,
+        'totalEpisodes': totalEpisodes ?? 0, 
+        'title': title,
+        'imageUrl': imageUrl,
+        'status': 'Watching', 
+      });
+    } catch (e) {
+      // Ignore
     }
   }
 
   Future<List<Map<String, dynamic>>> getSavedList(String status) async {
     final prefs = await SharedPreferences.getInstance();
-    final listString = prefs.getString(_listKey);
-    if (listString == null) return [];
+    final userId = prefs.getInt('userId');
+    if (userId == null) return [];
 
-    Map<String, dynamic> trackingList = jsonDecode(listString);
-    return trackingList.values
-        .where((element) => element['status'] == status)
-        .map((e) => e as Map<String, dynamic>)
-        .toList();
+    try {
+      final response = await ApiClient().localClient.get('/tracking/$userId/$status');
+      final data = response.data as List;
+      return data.map((e) => e as Map<String, dynamic>).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> removeAnimeFromList(String status, int animeId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+    if (userId == null) return;
+
+    try {
+      await ApiClient().localClient.delete('/tracking/$userId/$status/$animeId');
+    } catch (e) {
+      // Ignore
+    }
+  }
+
+  Future<void> deleteCustomList(String listName) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+    if (userId == null) return;
+
+    try {
+      await ApiClient().localClient.delete('/lists/$userId/$listName');
+    } catch (e) {
+      // Ignore
+    }
   }
 }
